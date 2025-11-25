@@ -15,14 +15,14 @@ const Header = ({sideBarOpen, isSideBarOpen}) => {
 
 
   return (
-    <div className='flex justify-between  items-center  shadow-lg shadow-gray-300 h-20 px-10'>
+    <div className=' flex justify-between  items-center  shadow-lg shadow-gray-300 min-h-20 px-10 bg-white'>
         <section className='flex justify-center items-center gap-10'>
              <img src={logo} alt="CloudKeeper_Logo" className="w-48 " />
-                   <MenuIcon onClick={()=> sideBarOpen(!isSideBarOpen)} sx={{ width: 30, height: 30 }}  className="text-blue-700 cursor-pointer" /> 
+                   <MenuIcon onClick={()=> sideBarOpen(!isSideBarOpen)} sx={{ width: 30, height: 30 }}  className="text-[#0a1c8f] cursor-pointer" /> 
         </section>
 
         <section>
-            <button onClick={()=> navigate("/")}className=' border-2 border-blue-700 p-2 w-30 rounded text-blue-700 font-semibold cursor-pointer'><LogoutOutlinedIcon/>  Logout</button>
+            <button onClick={()=> navigate("/")}className=' border-2 border-[#0a1c8f] p-2 w-30 rounded text-[#0a1c8f] font-semibold cursor-pointer'><LogoutOutlinedIcon/>  Logout</button>
         </section>
     </div>
   )

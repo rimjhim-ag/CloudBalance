@@ -9,7 +9,7 @@ export default function Login(){
   const navigate = useNavigate();
 
    const handleSubmit = () =>{
-            navigate("/dashboard/user-management");
+            navigate("/dashboard");
    }
 
     return(

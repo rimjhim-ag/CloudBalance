@@ -7,9 +7,9 @@ import { Outlet } from "react-router-dom";
 const Dashboard = () => {
   const [isSideBarOpen, setSidebarOpen] = useState(false);
   return (
-    <div class="h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       <Header sideBarOpen={setSidebarOpen} isSideBarOpen={isSideBarOpen} />
-      <div class="flex flex-1">
+      <div className="flex flex-1">
         <SideBar isSideBarOpen={isSideBarOpen} />
 
         <MainContent>

@@ -3,3 +3,36 @@
 
 
 }
+
+/* Toast container */
+.Toastify__toast {
+  border-radius: 9px;
+  padding: 20px 20px;
+ 
+  font-size: 17px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Success toast */
+.Toastify__toast--success {
+
+  color: #16a34a;
+}
+
+/* Error toast */
+.Toastify__toast--error {
+ 
+  color: #e71f1f;
+}
+
+/* Info toast */
+.Toastify__toast--info {
+ 
+  color: #2563eb;
+}
+
+/* Progress bar */
+.Toastify__progress-bar {
+  height: 7px;
+}

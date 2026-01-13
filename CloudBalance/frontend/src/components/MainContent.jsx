@@ -1,11 +1,11 @@
-import React from 'react'
+import React from "react";
 
-const MainContent = ({children}) => {
+const MainContent = ({ children }) => {
   return (
-    <div className='flex-1 bg-gray-200 h-screen overflow-y-auto'>
+    <div className="flex-1 bg-[#f4f4f4] overflow-y-auto h-screen">
       {children}
     </div>
-  )
-}
+  );
+};
 
-export default MainContent
+export default MainContent;

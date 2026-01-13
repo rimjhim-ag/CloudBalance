@@ -1,33 +1,34 @@
 import React, { Link } from "react";
 import { NavLink } from "react-router-dom";
 import {
-  ManageAccounts, // User Management
-  CloudQueue, // AWS Explorer
-  PersonAdd, // Onboarding
-  MonetizationOn, // Cost Explorer
+  ManageAccountsOutlined,
+  CloudQueueOutlined,
+  PersonAddOutlined,
+  MonetizationOnOutlined,
 } from "@mui/icons-material";
+
 
 const SideBar = ({ isSideBarOpen }) => {
   const sideContent = [
     {
       label: "User Management",
-      path: "user-management",
-      icon: <ManageAccounts />,
+      path: "users",
+      icon: <ManageAccountsOutlined />,
     },
     {
       label: "Onboarding",
       path: "onboarding",
-      icon: <PersonAdd />,
+      icon: <PersonAddOutlined />,
     },
     {
       label: "Cost Explorer",
       path: "cost-explorer",
-      icon: <MonetizationOn />,
+      icon: <MonetizationOnOutlined />,
     },
     {
       label: "AWS Explorer",
       path: "aws-explorer",
-      icon: <CloudQueue />,
+      icon: <CloudQueueOutlined />,
     },
   ];
 
@@ -35,7 +36,7 @@ const SideBar = ({ isSideBarOpen }) => {
     <aside
       className={` ${
         isSideBarOpen ? "w-15" : "w-70"
-      } mt-10 items-center flex flex-col gap-3 transition-width duration-400 ease-in-out`}
+      } mt-10 items-center flex flex-col gap-1 transition-width duration-400 ease-in-out`}
     >
       {sideContent.map((item, i) => (
         <NavLink
@@ -46,7 +47,7 @@ const SideBar = ({ isSideBarOpen }) => {
              group flex items-center gap-3  py-3 
             rounded-md cursor-pointer  
             
-            ${isActive ? "active bg-[#e6f4fa] font-medium" : "hover:bg-[#e6f4fa]"}
+            ${isActive ? "active bg-[#e6f4fa]" : "hover:bg-[#e6f4fa]"}
             ${isSideBarOpen ? "w-15 px-3" : "w-65 px-2"}
             `
           }
@@ -63,7 +64,7 @@ const SideBar = ({ isSideBarOpen }) => {
                 {item.icon}
               </span>
               <span
-                className={`text-md font-semibold   ${
+                className={`text-md    ${
                   isSideBarOpen ? "hidden" : ""
                 }`}
               >

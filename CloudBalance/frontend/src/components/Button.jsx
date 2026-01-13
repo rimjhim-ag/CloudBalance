@@ -1,6 +1,7 @@
 import React from "react";
 
 const Button = ({
+  type = "button",
   children,
   event,
   variant = "primary",
@@ -20,7 +21,7 @@ const Button = ({
       break;
 
     case "filled":
-      buttonColor = `bg-[${color}] text-white`;
+      buttonColor = `bg-[#0a3ca2] text-white`;
       break;
 
     default:
@@ -29,6 +30,7 @@ const Button = ({
 
   return (
     <button
+    type={type}
       onClick={event}
       className={`${buttonColor} ${padding} font-bold rounded-sm ${margin} flex items-center gap-2 cursor-pointer`}
     >

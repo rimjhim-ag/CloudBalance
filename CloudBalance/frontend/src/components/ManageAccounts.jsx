@@ -1,31 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LuTimerReset } from "react-icons/lu";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { FaRegFolderOpen } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
+import {useAccounts} from "../hooks/useAccounts"
 
-const dummyAccounts = [
-  { id: 1, name: "Roni Thomas", accountId: "989033863264" },
-  { id: 2, name: "Aircel Money", accountId: "767369465358" },
-  { id: 3, name: "Doodhwala", accountId: "237795921511" },
-  { id: 4, name: "AI Gym", accountId: "315756860246" },
-  { id: 5, name: "Tejprakash Sharma", accountId: "861931862932" },
-  { id: 6, name: "Apoyo", accountId: "429796869693" },
-  { id: 7, name: "IDFC", accountId: "003429390769" },
-  { id: 8, name: "Galadari", accountId: "112512014927" },
-];
 
-function ManageAccount() {
-  const [available, setAvailable] = useState(dummyAccounts);
-  const [associated, setAssociated] = useState([]);
+
+function ManageAccount({associated , setAssociated}) {
+  const [allAccounts, setAllAccounts] = useState([]);
+
+ 
   const [selectedAvailable, setSelectedAvailable] = useState([]);
   const [selectedAssociated, setSelectedAssociated] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const {getAllAccounts, loading} = useAccounts();
+
+useEffect(() => {
+  getAllAccounts().then((data) => {
+    setAllAccounts(data || []);
+  });
+}, []);
+
+const associatedIds = new Set((associated || []).map(acc => acc.Id));
+
+const available = allAccounts.filter(
+  acc => !associatedIds.has(acc.Id)
+);
+
+
+
+
+
+
+
+
 
   const filteredAvailable = available.filter(
     (acc) =>
-      acc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      acc.accountName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       acc.accountId.includes(searchTerm)
   );
 
@@ -45,40 +59,37 @@ function ManageAccount() {
 
   const selectAllAvailable = (e) => {
     if (e.target.checked) {
-      setSelectedAvailable(filteredAvailable.map((a) => a.id));
+      setSelectedAvailable(filteredAvailable.map((a) => a.Id));
     } else {
       setSelectedAvailable([]);
     }
   };
 
  
-  const addAccounts = () => {
-    const toAdd = available.filter((a) => selectedAvailable.includes(a.id));
-    setAssociated([...associated, ...toAdd]);
-    setAvailable(available.filter((a) => !selectedAvailable.includes(a.id)));
-    setSelectedAvailable([]);
-  };
+const addAccounts = () => {
+  const toAdd = available.filter(a => selectedAvailable.includes(a.Id));
+  setAssociated(prev => [...prev, ...toAdd]);
+  setSelectedAvailable([]);
+};
+
 
  
-  const removeAccounts = () => {
-    const toRemove = associated.filter((a) =>
-      selectedAssociated.includes(a.id)
-    );
-    setAvailable([...available, ...toRemove]);
-    setAssociated(
-      associated.filter((a) => !selectedAssociated.includes(a.id))
-    );
-    setSelectedAssociated([]);
-  };
+ const removeAccounts = () => {
+  setAssociated(prev =>
+    prev.filter(a => !selectedAssociated.includes(a.Id))
+  );
+  setSelectedAssociated([]);
+};
 
-  // Reset
-  const handleReset = () => {
-    setAvailable(dummyAccounts);
-    setAssociated([]);
-    setSelectedAvailable([]);
-    setSelectedAssociated([]);
-    setSearchTerm("");
-  };
+
+  
+const handleReset = () => {
+  setAssociated([]);
+  setSelectedAvailable([]);
+  setSelectedAssociated([]);
+  setSearchTerm("");
+};
+
 
   return (
     <div className="bg-white rounded-md shadow">
@@ -137,26 +148,40 @@ function ManageAccount() {
             </div>
 
             {/* Account List */}
-            <div className="max-h-80 overflow-y-auto bg-white">
-              {filteredAvailable.map((acc, index) => (
-                <label
-                  key={acc.id}
-                  className={`flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-gray-100 ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedAvailable.includes(acc.id)}
-                    onChange={() => toggleSelection(acc.id, "available")}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <span className="text-sm">
-                    {acc.name} ({acc.accountId})
-                  </span>
-                </label>
-              ))}
-            </div>
+           <div className="max-h-80 overflow-y-auto bg-white flex items-center justify-center">
+  {loading ? (
+    <div className="py-10">
+      {/* simple spinner */}
+      <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+    </div>
+  ) : filteredAvailable.length === 0 ? (
+    <p className="text-sm text-gray-400 py-6">
+      No accounts found
+    </p>
+  ) : (
+    <div className="w-full">
+      {filteredAvailable.map((acc, index) => (
+        <label
+          key={acc.Id}
+          className={`flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-gray-100 ${
+            index % 2 === 0 ? "bg-white" : "bg-gray-50"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={selectedAvailable.includes(acc.Id)}
+            onChange={() => toggleSelection(acc.Id, "available")}
+            className="w-4 h-4 cursor-pointer"
+          />
+          <span className="text-sm">
+            {acc.accountName} ({acc.accountId})
+          </span>
+        </label>
+      ))}
+    </div>
+  )}
+</div>
+
           </div>
 
           {/* Arrows */}
@@ -184,12 +209,12 @@ function ManageAccount() {
             <div className="p-3 bg-white border-b border-gray-200 font-medium flex justify-between items-center">
               <span>Associated Account IDs</span>
               <span className="text-blue-600 text-sm font-semibold">
-                {associated.length} Added
+                {associated?.length} Added
               </span>
             </div>
 
             <div className="max-h-96 overflow-y-auto bg-white">
-              {associated.length === 0 ? (
+              {associated?.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-gray-400 py-20">
                   <FaRegFolderOpen size={64} className="mb-4" />
                   <p className="font-semibold text-lg text-gray-700 mb-1">
@@ -200,17 +225,17 @@ function ManageAccount() {
                   </p>
                 </div>
               ) : (
-                associated.map((acc, index) => (
+                associated?.map((acc, index) => (
                   <label
-                    key={acc.id}
+                    key={acc.Id}
                     className={`flex items-center gap-3 px-3 py-3 cursor-pointer hover:bg-gray-100 ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50"
                     }`}
                   >
                     <input
                       type="checkbox"
-                      checked={selectedAssociated.includes(acc.id)}
-                      onChange={() => toggleSelection(acc.id, "associated")}
+                      checked={selectedAssociated.includes(acc.Id)}
+                      onChange={() => toggleSelection(acc.Id, "associated")}
                       className="w-4 h-4 cursor-pointer"
                     />
                     <span className="text-sm">

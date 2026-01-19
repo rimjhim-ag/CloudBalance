@@ -3,37 +3,27 @@ import { useDispatch } from "react-redux";
 import { loginThunk, logoutThunk } from "../redux/actions/auth.actions";
 import { toast } from "react-toastify";
 
-export  const useAuth = () => {
+export const useAuth = () => {
   const dispatch = useDispatch();
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const login = async (payload) => {
     setLoading(true);
-    setError(null);
-  
-
     try {
-   await dispatch(loginThunk(payload));
-    
+      await dispatch(loginThunk(payload));
+      toast.success("Login Successfully")
     } catch (err) {
-      setError(err);
-      toast.error(err?.message);
+      toast.error(err.response?.data?.error || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    dispatch(logoutThunk());
+  const logout = async () => {
+    
+    await dispatch(logoutThunk());
     toast.info("Logged out");
   };
 
-  return {
-    login,
-    logout,
-    loading,
-    error,
-  };
+  return { login, logout, loading };
 };

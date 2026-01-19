@@ -1,27 +1,19 @@
 import React from "react";
-import Loader from "./Loader";
+import { filters } from "../utils/filterConstant";
+import { getMonthsBetween, calculateTotals } from "../utils/costHelpers";
 
-const CostTable = ({ data}) => {
- 
 
-  //  Collect all unique months from the data
-  const monthSet = new Set();
-  data.forEach((item) => {
-    Object.keys(item.monthlyCost).forEach((month) => monthSet.add(month));
-  });
-  const months = Array.from(monthSet); // sorted months
 
-  // Calculate column totals
-  const columnTotals = {};
-  months.forEach((month) => {
-    columnTotals[month] = data.reduce(
-      (sum, item) => sum + (item.monthlyCost[month] || 0),
-      0
-    );
-  });
+const CostTable = ({ selectedFilter, data, startDate, endDate }) => {
+  if (!startDate || !endDate) return <p>Please select start and end dates</p>;
 
-  //  Calculate grand total
-  const grandTotal = Object.values(columnTotals).reduce((a, b) => a + b, 0);
+
+
+const months = getMonthsBetween(startDate, endDate);
+const { columnTotals, grandTotal } = calculateTotals(data, months);
+
+const label = filters.find(f => f.value === selectedFilter)?.name;
+
 
 
 
@@ -31,7 +23,7 @@ const CostTable = ({ data}) => {
         {/* Table Header */}
         <thead>
           <tr className="bg-gray-100">
-            <th className="border px-4 py-2 text-left">Service</th>
+            <th className="border px-4 py-2 text-left">{label}</th>
             {months.map((month) => (
               <th key={month} className="border px-4 py-2 text-right">
                 {month}
@@ -43,25 +35,33 @@ const CostTable = ({ data}) => {
 
         {/* Table Body */}
         <tbody>
-          {data.map((row) => {
-            const rowTotal = Object.values(row.monthlyCost).reduce(
-              (a, b) => a + b,
-              0
-            );
-            return (
-              <tr key={row.groupBy} className="hover:bg-gray-50">
-                <td className="border px-4 py-2 font-medium">{row.groupBy}</td>
-                {months.map((month) => (
-                  <td key={month} className="border px-4 py-2 text-right">
-                    ${((row.monthlyCost[month] || 0).toLocaleString())}
+          {data.length > 0 ? (
+            data.map((row) => {
+              const rowTotal = months.reduce(
+                (sum, month) => sum + (row.monthlyCost[month] || 0),
+                0
+              );
+              return (
+                <tr key={row.groupBy} className="hover:bg-gray-50">
+                  <td className="border px-4 py-2 font-medium">{row.groupBy}</td>
+                  {months.map((month) => (
+                    <td key={month} className="border px-4 py-2 text-right">
+                      ${((row.monthlyCost[month] || 0).toLocaleString())}
+                    </td>
+                  ))}
+                  <td className="border px-4 py-2 text-right font-semibold text-blue-600">
+                    ${rowTotal.toLocaleString()}
                   </td>
-                ))}
-                <td className="border px-4 py-2 text-right font-semibold text-blue-600">
-                  ${rowTotal.toLocaleString()}
-                </td>
-              </tr>
-            );
-          })}
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td className="border px-4 py-10 text-center" colSpan={months.length + 2}>
+                No data available
+              </td>
+            </tr>
+          )}
         </tbody>
 
         {/* Table Footer - Column totals */}

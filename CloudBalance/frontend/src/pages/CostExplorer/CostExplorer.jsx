@@ -1,69 +1,71 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-/* Components */
 import DropDown from "../../components/DropDown";
 import Chart from "../../components/Chart";
 import FiltersPanel from "../../components/FilterPanel";
 
-/* Icons */
 import TuneIcon from "@mui/icons-material/Tune";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import StackedBarChartIcon from "@mui/icons-material/StackedBarChart";
 import CostTable from "../../components/CostTable";
-import { useCostExplorer } from "../../hooks/useCostExplorer";
+
 import Loader from "../../components/Loader";
+import { filters } from "../../utils/filterConstant";
+import useCostReport from "../../hooks/useCostReport";
+import { useSelector } from "react-redux";
+
+const chartTabs = [
+  { id: "bar", icon: <AssessmentIcon />, type: "mscolumn2d" },
+  { id: "line", icon: <TimelineIcon />, type: "msline" },
+  { id: "stack", icon: <StackedBarChartIcon />, type: "stackedcolumn2d" },
+];
 
 const CostExplorer = () => {
-  /* -------------------- STATE -------------------- */
   const [selectedFilter, setSelectedFilter] = useState("SERVICE");
   const [activeChart, setActiveChart] = useState("bar");
   const [filterButton, setFilterButton] = useState(false);
-const [endDate, setEndDate] = useState("");
-const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setMonth(new Date().getMonth() - 6))
+      .toISOString()
+      .split("T")[0]
+  );
+  const [appliedFilters, setAppliedFilters] = useState({});
+  const [draftFilters, setDraftFilters] = useState({});
+  const { selectedAccount } = useSelector(state => state.accounts);
+  const { data, loading, error, fetchCostReport } = useCostReport();
+
+  const isReady =
+  Boolean(selectedAccount) &&
+  Boolean(selectedFilter) &&
+  Boolean(startDate) &&
+  Boolean(endDate);
 
 
-
-
-  const { data, loading, error } = useCostExplorer({
-    filter :selectedFilter,
-    startDate, endDate
-  });
-
-
+  useEffect(() => {
  
- const filters = [
-  { name: "Service", value: "SERVICE" },
-  { name: "Instance Type", value: "INSTANCE_TYPE" },
-  { name: "Account Id", value: "ACCOUNT_ID" },
-  { name: "Platform", value: "PLATFORM" },
-  { name: "Region", value: "REGION" },
-  { name: "Usage Type Group", value: "USAGE_TYPE_GROUP" },
+      
+    fetchCostReport({
+      groupBy: selectedFilter,
+      startDate,
+      endDate,
+      accountId: selectedAccount,
+      filters: appliedFilters,
+    });
+  }, [selectedFilter, startDate, endDate, appliedFilters, selectedAccount]);
 
-  { name: "Purchase Option", value: "PURCHASE_OPTION" },
-  { name: "API Operation", value: "API_OPERATION" },
-  { name: "Resource", value: "RESOURCE" },
-  { name: "Usage Type", value: "USAGE_TYPE" },
-  { name: "Legal Entity", value: "LEGAL_ENTITY" },
-];
-
-  const chartTabs = [
-    { id: "bar", icon: <AssessmentIcon />, type: "mscolumn2d" },
-    { id: "line", icon: <TimelineIcon />, type: "msline" },
-    { id: "stack", icon: <StackedBarChartIcon />, type: "stackedcolumn2d" },
+  const sortedFilters = [
+    filters.find((f) => f.value === selectedFilter),
+    ...filters.filter((f) => f.value !== selectedFilter),
   ];
 
-  
-const sortedFilters = [
-  filters.find(f => f.value === selectedFilter),          
-  ...filters.filter(f => f.value !== selectedFilter)       
-];
+
 
   return (
     <div className="h-[90%] overflow-y-auto">
-      {/* 
-          PAGE HEADER
-    */}
       <div className="mt-10 ml-8 leading-8">
         <h1 className="font-extrabold text-4xl tracking-tight">
           Cost Explorer
@@ -73,16 +75,14 @@ const sortedFilters = [
         </p>
       </div>
 
-      
       <div className="mt-8 mx-5 rounded-lg flex flex-col">
         <div className="flex items-center justify-between px-4 py-6 bg-[#f8f8f8] border-b-2 border-[#e6e6e6]">
-        
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-bold text-sm whitespace-nowrap">
               Group By:
             </span>
 
-            {sortedFilters.slice(0,6).map((f) => (
+            {sortedFilters.slice(0, 6).map((f) => (
               <span
                 key={f.name}
                 onClick={() => setSelectedFilter(f.value)}
@@ -116,7 +116,6 @@ const sortedFilters = [
             />
           </div>
 
-         
           <button
             onClick={() => setFilterButton(!filterButton)}
             className={`
@@ -136,13 +135,8 @@ const sortedFilters = [
           </button>
         </div>
 
-        {/* =====================================================
-            MAIN CONTENT + FILTER PANEL
-        ===================================================== */}
         <div className="w-full flex overflow-hidden">
-          {/* -------- LEFT : CHART SECTION -------- */}
           <div className="bg-white flex-1 min-w-0">
-            {/* Chart Header */}
             <div className="flex justify-between items-center px-7 py-5 border-b-2 border-[#e6e6e6]">
               <h1 className="text-[#555b6c]">Costs ($)</h1>
 
@@ -153,7 +147,7 @@ const sortedFilters = [
                   <input
                     type="date"
                     value={startDate}
-                    onChange={(e)=> setStartDate(e.target.value)}
+                    onChange={(e) => setStartDate(e.target.value)}
                     className="focus:outline-none focus:ring-0 focus:border-none"
                   />
                 </div>
@@ -165,8 +159,8 @@ const sortedFilters = [
                   <h4 className="font-bold text-black">End date :</h4>
                   <input
                     type="date"
-                     value={endDate}
-                    onChange={(e)=> setEndDate(e.target.value)}
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
                     className="focus:outline-none focus:ring-0 focus:border-none"
                   />
                 </div>
@@ -198,47 +192,59 @@ const sortedFilters = [
               </div>
             </div>
 
-       {/* ================== DATA STATES ================== */}
+            {loading && !isReady && (
+              <div className="flex justify-center items-center h-[40vh]">
+                <Loader />
+              </div>
+            )}
 
-{loading && (
-  <div className="flex justify-center items-center h-[40vh]">
-    <Loader />
-  </div>
-)}
+            {error && (
+              <div className="flex justify-center items-center h-[40vh] text-red-600 font-semibold">
+                Failed to load cost data
+              </div>
+            )}
 
-{error && (
-  <div className="flex justify-center items-center h-[40vh] text-red-600 font-semibold">
-    Failed to load cost data
-  </div>
-)}
+            {!loading && !error && (
+              <>
+                <div className="p-4">
+                  <Chart
+                    data={data}
+                    startDate={startDate}
+                    endDate={endDate}
+                    type={
+                      chartTabs.find((chart) => chart.id === activeChart)?.type
+                    }
+                  />
+                </div>
 
-{!loading && !error && (
-  <>
-    <div className="p-4">
-      <Chart
-        data={data}
-        type={chartTabs.find(
-          (chart) => chart.id === activeChart
-        )?.type}
-      />
-    </div>
+                <div className="rounded-lg p-5 mx-4 my-3 bg-[#dbe6f8] flex justify-center items-center border-2 border-[#869bc3] text-[#0a3ca2]">
+                  We are showing up to top 1000 records by cost.
+                </div>
 
-    <div className="rounded-lg p-5 mx-4 my-3 bg-[#dbe6f8] flex justify-center items-center border-2 border-[#869bc3] text-[#0a3ca2]">
-      We are showing up to top 1000 records by cost.
-    </div>
-
-    <CostTable data={data} />
-  </>
-)}
-
-
-
+                <CostTable
+                  selectedFilter={selectedFilter}
+                  data={data}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+              </>
+            )}
           </div>
 
-          {/* -------- RIGHT : FILTER PANEL -------- */}
           {filterButton && (
             <div className="w-[320px] shrink-0 bg-[#f8f8f8] border-l border-[#e6e6e6]">
-              <FiltersPanel />
+              <FiltersPanel
+                draftFilters={draftFilters}
+                setDraftFilters={setDraftFilters}
+                onApply={(filtersForApi) => {
+                  setDraftFilters(filtersForApi);
+                  setAppliedFilters(filtersForApi);
+                }}
+                onCancel={() => {
+                  setDraftFilters(appliedFilters);
+                  setFilterButton(false);
+                }}
+              />
             </div>
           )}
         </div>

@@ -29,19 +29,21 @@ export default function Login() {
     });
   };
 
-  const handleSubmit =  async(e) => {
-    e.preventDefault();
-
-   await login(formData);
-
-
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await login(formData); 
+  } catch (err) {
+    console.log("Login failed:", err.message);
   
-  };
+  }
+};
+
 
   return (
     <div className="flex flex-col justify-center items-center gap-5 h-screen">
       <img
-        src="./src/assets/Cloudkeeper_New.svg"
+        src="/Cloudkeeper_New.svg"
         alt="CloudKeeper_Logo"
         className="w-48"
       />

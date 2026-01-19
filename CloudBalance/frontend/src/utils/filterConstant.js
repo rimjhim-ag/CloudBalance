@@ -1,0 +1,16 @@
+ export const filters = [
+  { name: "Service", value: "SERVICE" },
+  { name: "Instance Type", value: "INSTANCE_TYPE" },
+  { name: "Account Id", value: "ACCOUNT_ID" },
+  { name: "Platform", value: "PLATFORM" },
+  { name: "Region", value: "REGION" },
+  { name: "Usage Type Group", value: "USAGE_TYPE_GROUP" },
+   { name: "Billing Entity", value: "BILLING_ENTITY" },
+    { name: "Tenancy", value: "TENANCY" },
+     { name: "Availability Zone", value: "AVAILABILITY_ZONE" },
+  { name: "Purchase Option", value: "PURCHASE_OPTION" },
+  { name: "API Operation", value: "API_OPERATION" },
+  { name: "Resource", value: "RESOURCE" },
+  { name: "Usage Type", value: "USAGE_TYPE" },
+  { name: "Legal Entity", value: "LEGAL_ENTITY" },
+];

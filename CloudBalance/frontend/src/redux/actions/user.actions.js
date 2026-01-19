@@ -11,6 +11,7 @@ export const fetchCurrentUser = () => async (dispatch) => {
     });
     return res.data;
   } catch (err) {
+    
     dispatch({ type: "AUTH_FETCH_USER_FAILURE" });
     throw err;
   }

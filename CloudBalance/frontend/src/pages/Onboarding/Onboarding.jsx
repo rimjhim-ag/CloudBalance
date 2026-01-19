@@ -4,6 +4,7 @@ import AddManagedPolicies from "./AddManagedPolicies";
 import CreateCUR from "./CreateCUR";
 import { toast } from "react-toastify";
 import { useAccounts } from "../../hooks/useAccounts";
+import { useSelector } from "react-redux";
 
 const Onboarding = () => {
   const [step, setStep] = useState(1);
@@ -13,6 +14,10 @@ const Onboarding = () => {
     accountId: "",
   });
 
+
+   const { role } = useSelector((state) => state.user); 
+  const isRoleAdmin = role === "ADMIN"; 
+
   const {addAccount, loading} = useAccounts();
 
    const handleChange = (e) => {
@@ -21,14 +26,18 @@ const Onboarding = () => {
   };
 
   const handleNext = () => {
+ 
+ 
     if (!formData.ARN || !formData.accountName || !formData.accountId) {
       toast.error("Please fill all required fields");
-      return false;
+       return false;
     }
+
+
     
     setStep(2);
 
-    return true
+  
 
  
   };
@@ -44,7 +53,7 @@ const Onboarding = () => {
 
   return (
     <>
-      {step === 1 && <IAMRole onNext={handleNext} formData ={formData} handleChange = {handleChange} />}
+      {step === 1 && <IAMRole onNext={handleNext} formData ={formData} handleChange = {handleChange} isRoleAdmin={isRoleAdmin} />}
       {step === 2 && (
         <AddManagedPolicies
           onBack={() => setStep(1)}

@@ -4,6 +4,7 @@ import { Add, Edit } from "@mui/icons-material";
 import Button from "../../components/Button";
 import {useUsers} from "../../hooks/useUsers";
 import Skeleton from "@mui/material/Skeleton";
+import { useSelector } from "react-redux";
 
 
 
@@ -11,16 +12,22 @@ const UsersTable = () => {
   const navigate = useNavigate();
   const { getUsers, loading, error} = useUsers();
 
+   
   const [usersData , setUsersData] = useState([]);
   const headers = ["First Name", "Last Name", "Email ID", "Role", "Actions"];
-
+   
 
 
   
   useEffect(() =>{
-     getUsers().then(data => setUsersData(data)).catch(ex => console.log(ex));
+   getUsers().then(data => setUsersData(data))
 
   }, [])
+
+   const { role , userId : currentUserId} = useSelector((state) => state.user);
+  const isRoleAdmin = role === "ADMIN"; 
+
+
 
 
 
@@ -34,7 +41,7 @@ const UsersTable = () => {
 
       <div className="bg-white pb-5 flex flex-col w-full max-w-[1200px] rounded-md">
         <div>
-          <Button event={handleAddUser} variant="filled" padding="px-3 py-2">
+          <Button event={handleAddUser}   disabled={!isRoleAdmin} variant="filled" padding="px-3 py-2">
             <Add sx={{ width: 30, height: 30 }} />
             <span>Add New User</span>
           </Button>
@@ -85,7 +92,7 @@ const UsersTable = () => {
   {/* SUCCESS STATE */}
   {!loading &&
     !error &&
-    usersData.map((data) => (
+    usersData.filter((user) => user.usersId !== currentUserId).map((data) => (
       <tr
         key={data.usersId}
         className="text-center even:bg-gray-100 divide-x-2 divide-white"
@@ -102,6 +109,7 @@ const UsersTable = () => {
           <button
             onClick={() => navigate(`edituser/${data.usersId}`)}
             className="cursor-pointer"
+              disabled={!isRoleAdmin}
           >
             <Edit sx={{ color: "#0a3ca2" }} />
           </button>

@@ -11,19 +11,9 @@ import CURImage2 from "../../assets/CURImage2.png";
 import CURImage3 from "../../assets/CURImage3.png";
 import CURImage4 from "../../assets/CURImage4.png";
 import LoopSharpIcon from '@mui/icons-material/LoopSharp';
+import { StepItem } from "../../components/Steps";
 
-const StepsCount = ({ children }) => (
-  <div className="shrink-0 rounded-full bg-[#A0A0A0] w-8 h-8 flex justify-center items-center text-white">
-    {children}
-  </div>
-);
 
-const StepItem = ({ number, children }) => (
-  <div className="flex flex-row gap-3">
-    <StepsCount>{number}</StepsCount>
-    <div className="flex-1">{children}</div>
-  </div>
-);
 
 const CreateCUR = ({onBack, handleSubmit, loading}) => {
  

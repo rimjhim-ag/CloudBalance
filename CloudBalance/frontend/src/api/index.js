@@ -1,88 +1,54 @@
-import React from "react";
+
+// API.js
 import axios from "axios";
-import errorHandler from "./errorHandler";
-
 import store from "../redux/store";
-import {
-  refreshTokenThunk,
+import { refreshTokenThunk, logoutThunk } from "../redux/actions/auth.actions";
 
-} from "../redux/actions/auth.actions";
 
-const API = axios.create({
+export const API = axios.create({
   baseURL: "http://localhost:8080/api",
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
   timeout: 8000,
 });
 
-const refreshAPI = axios.create({
+export const authAPI = axios.create({
   baseURL: "http://localhost:8080/api",
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
   timeout: 8000,
 });
 
-API.interceptors.request.use(
-  (config) => {
-    const url = config?.url || "";
 
-   
-    if (
-      url.includes("auth/login") ||
-      url.includes("auth/logout") 
-    ) {
-      return config; 
-    }
-
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(errorHandler(error))
-);
-
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 API.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   async (error) => {
-    const originalRequest = error.config;
-    const url = originalRequest?.url || "";
-   console.log(url);
-  
-    if (
-      url.includes("/auth/login") ||
-      url.includes("/auth/logout") 
-    ) {
-      return Promise.reject(errorHandler(error));
-    }
-
     const status = error.response?.status;
-
-    if (status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
+    if (status === 401 && !error.config._retry) {
+      error.config._retry = true;
       try {
-        console.log("refresh req send");
-
+     
+        
         const newToken = await store.dispatch(refreshTokenThunk());
-
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return API(originalRequest);
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return API(error.config);
       } catch (refreshError) {
-        localStorage.removeItem("authToken");
-        window.location.href = "/";
-        return Promise.reject(errorHandler(refreshError));
+        await store.dispatch(logoutThunk());
+       
+        return Promise.reject(refreshError);
       }
     }
 
-    return Promise.reject(errorHandler(error));
+   
+    return Promise.reject(error);
   }
 );
 
 
 
-
-export {refreshAPI, API};

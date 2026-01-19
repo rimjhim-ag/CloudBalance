@@ -5,25 +5,30 @@ import StackedBarChartIcon from "@mui/icons-material/StackedBarChart";
 import CopyToClipboard from "../../components/CopyToClipboard";
 import IAMStep5 from "../../assets/IAMStep5.png";
 import Button from "../../components/Button";
-
-
-const StepsCount = ({ children }) => (
-  <div className="shrink-0 rounded-full bg-[#A0A0A0] w-8 h-8 flex justify-center items-center text-white">
-    {children}
-  </div>
-);
-
-const StepItem = ({ number, children }) => (
-  <div className="flex flex-row gap-3">
-    <StepsCount>{number}</StepsCount>
-    <div className="flex-1">{children}</div>
-  </div>
-);
-
-const IAMRole = ({onNext, formData, handleChange}) => {
+import { StepItem } from "../../components/Steps";
+import { toast } from "react-toastify";
 
 
 
+const IAMRole = ({onNext, formData, handleChange, isRoleAdmin}) => {
+
+   const inputCheck = (value) =>{
+       
+      const checkValidation = value?.match(/\D+/);
+  return checkValidation !== null;
+       
+   }
+
+
+   const handleNext = () =>{
+
+       
+      if(inputCheck(formData?.accountId) === false){
+           onNext()
+      }
+     
+   }
+    
 
  
 
@@ -134,6 +139,7 @@ const IAMRole = ({onNext, formData, handleChange}) => {
       className="w-full border border-[#e6e6e6] p-4 text-sm rounded-md"
       placeholder="Enter Account Id"
       name="accountId"
+      pattern=""
       value={formData?.accountId || ""}
        onChange={handleChange}
       
@@ -147,7 +153,7 @@ const IAMRole = ({onNext, formData, handleChange}) => {
       {/* Footer Buttons */}
       <div className="mt-6 flex justify-end gap-4">
       
-        <Button event={onNext} variant="secondary" padding="px-8 py-2" margin="m-2">
+        <Button event={handleNext} disabled={!isRoleAdmin } variant="filled" padding="px-8 py-2" margin="m-2">
           Next - Add Customer Managed Policies
         </Button>
       </div>

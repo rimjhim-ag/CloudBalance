@@ -8,7 +8,7 @@ export const useUsers = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-
+ 
   const getUsers = async () => {
     setLoading(true);
     setError(null);
@@ -34,7 +34,7 @@ export const useUsers = () => {
       return res.data;
     } catch (err) {
       setError(err);
-      toast.error(err?.message || "Failed to fetch user");
+      toast.error(err?.response?.data?.error|| "Failed to fetch user");
       throw err;
     } finally {
       setLoading(false);
@@ -51,7 +51,8 @@ export const useUsers = () => {
       return res.data;
     } catch (err) {
       setError(err);
-      toast.error(err?.message || "Failed to add user");
+      console.log(err);
+      toast.error(err?.response?.data?.error || "Failed to add user");
       throw err;
     } finally {
       setLoading(false);
@@ -68,7 +69,24 @@ export const useUsers = () => {
       return res.data;
     } catch (err) {
       setError(err);
-      toast.error(err?.message || "Failed to update user");
+      toast.error(err?.response?.data?.error || "Failed to update user");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    const getUserAccounts = async (id) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await API.get(`users/${id}/accounts`);
+      console.log("res data " + res)
+      return res.data;
+    } catch (err) {
+      setError(err);
+      toast.error(err?.response?.data?.error || "Failed to fetch user accounts");
       throw err;
     } finally {
       setLoading(false);
@@ -87,6 +105,7 @@ const fetchCurrentUserCall = async () => {
     getUsers,
     getUserById,
     addUser,
+    getUserAccounts,
     fetchCurrentUserCall,
     updateUser,
     loading,

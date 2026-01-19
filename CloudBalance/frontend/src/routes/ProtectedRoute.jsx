@@ -6,8 +6,8 @@ import Loader from "./Loader";
 import { canAccessRoute, getFirstAllowedRoute } from "../utils/roleGuard";
 
 const ProtectedRoute = ({ children }) => {
-  const token = useSelector(state => state.auth.token);
-  const { role, isFetched, isLoading } = useSelector(state => state.user);
+  const token = useSelector((state) => state.auth.token);
+  const { role, isFetched, isLoading } = useSelector((state) => state.user);
   const location = useLocation();
   const { fetchCurrentUserCall } = useUsers();
 
@@ -17,27 +17,26 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [token, isFetched, isLoading, fetchCurrentUserCall]);
 
-
+ 
   if (!token) {
     return <Navigate to="/" replace />;
   }
-
 
   if (isLoading || !isFetched) {
     return <Loader fullScreen />;
   }
 
- 
+
   if (location.pathname === "/dashboard") {
     const firstAllowed = getFirstAllowedRoute(role);
-    console.log(firstAllowed);
-    
-    return firstAllowed
-      ? <Navigate to={firstAllowed} replace />
-      : <Navigate to="/unauthorized" replace />;
+    return firstAllowed ? (
+      <Navigate to={firstAllowed} replace />
+    ) : (
+      <Navigate to="/unauthorized" replace />
+    );
   }
 
-  
+
   if (!canAccessRoute(role, location.pathname)) {
     return <Navigate to="/unauthorized" replace />;
   }

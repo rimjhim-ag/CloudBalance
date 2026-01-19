@@ -1,41 +1,58 @@
-import React from 'react'
+import React from "react";
 
-const AWSTable = ({AWSdata}) => {
-
-    const headers = ["Resource ID", "Resource Name", "Engine", "Status"];
+const AWSTable = ({ columns = [], rows = [] }) => {
+  if (!columns.length || !rows.length) {
+    return <div className="text-gray-500 px-10">No data available</div>;
+  }
 
   return (
-    <div> <table className="w-[80%] border border-gray-200 rounded-lg mx-10 border-collapse">
-              <thead>
-                <tr className="bg-[#0a3ca2] divide-x-2 divide-white">
-                  {headers.map((heading, index) => (
-                    <th key={index} className="p-2 text-white">
-                      {heading}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-    
-              <tbody>
-                {AWSdata.map((data) => (
-                  <tr
-                    key={data.id}
-                    className="odd:bg-white  text-center even:bg-[#f8f7fc] divide-x-2 divide-white"
-                  >
-                    <td className="p-3">{data.name}</td>
-                    <td>{data.engine}</td>
-                    <td>{data.region}</td>
-                    <td>
-                      <span className=" font-semibold  text-lg px-3 py-1 ">
-                        {data.status}
-                      </span>
-                    </td>
-                   
-                  </tr>
-                ))}
-              </tbody>
-            </table></div>
-  )
-}
+    <div className="overflow-x-auto">
+      <table className="w-[80%] border border-gray-200 rounded-lg mx-10 border-collapse">
+        {/* HEADER */}
+        <thead>
+          <tr className="bg-[#0a3ca2] divide-x-2 divide-white">
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                className="p-2 text-white text-sm font-semibold text-center"
+              >
+                {col.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
 
-export default AWSTable
+        {/* BODY */}
+        <tbody>
+          {rows.map((row) => (
+            <tr
+              key={row.id}
+              className="odd:bg-white even:bg-[#f8f7fc] divide-x-2 divide-white text-center"
+            >
+              {columns.map((col) => (
+                <td key={col.key} className="p-3 text-sm">
+                  {col.key === "status" ? (
+                    <span
+                      className={`font-semibold px-3 py-1 rounded-full text-xs
+                        ${
+                          row[col.key] === "RUNNING"
+                            ? "text-green-700 bg-green-100"
+                            : "text-red-700 bg-red-100"
+                        }`}
+                    >
+                      {row[col.key]}
+                    </span>
+                  ) : (
+                    row[col.key] ?? "-"
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default AWSTable;

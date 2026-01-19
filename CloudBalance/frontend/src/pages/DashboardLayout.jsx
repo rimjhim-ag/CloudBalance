@@ -23,6 +23,8 @@ const Dashboard = () => {
       <div className="flex flex-1">
         <SideBar isSideBarOpen={isSideBarOpen} />
 
+
+         
         <MainContent className="z-40">
           <Outlet />
         </MainContent>

@@ -8,19 +8,8 @@ import PolicyImage2 from "../../assets/PolicyImage2.png";
 import PolicyImage3 from "../../assets/PolicyImage3.png";
 import Button from "../../components/Button";
 import { Link } from "react-router-dom";
+import { StepItem } from "../../components/Steps";
 
-const StepsCount = ({ children }) => (
-  <div className="shrink-0 rounded-full bg-[#A0A0A0] w-8 h-8 flex justify-center items-center text-white">
-    {children}
-  </div>
-);
-
-const StepItem = ({ number, children }) => (
-  <div className="flex flex-row gap-3">
-    <StepsCount>{number}</StepsCount>
-    <div className="flex-1">{children}</div>
-  </div>
-);
 
 const AddManagedPolicies = ({onBack, onNext}) => {
 
@@ -33,7 +22,7 @@ const AddManagedPolicies = ({onBack, onNext}) => {
           Create an Inline policy for the role by following these steps
         </p>
       </div>
-      {/* Main Steps Box */}
+    
       <div className="bg-white px-6 py-9 flex flex-col gap-5 rounded-md shadow-md">
         <StepItem number="1">
           Go to the{" "}
@@ -608,7 +597,7 @@ const AddManagedPolicies = ({onBack, onNext}) => {
 
 
 
-      {/* Footer Buttons */}
+    
       <div className="mt-6 flex justify-end gap-4">
        <Button  event={onBack} variant="primary" padding="px-8 py-2" margin="m-2">
          Back - Create An IAM Role

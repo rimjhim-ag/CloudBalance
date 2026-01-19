@@ -4,6 +4,7 @@ const Button = ({
   type = "button",
   children,
   event,
+  disabled,
   variant = "primary",
   color = "#0a3ca2",
   padding = "px-3 py-2",
@@ -28,9 +29,12 @@ const Button = ({
       buttonColor = "";
   }
 
+  console.log(disabled)
+
   return (
     <button
     type={type}
+    disabled={disabled}
       onClick={event}
       className={`${buttonColor} ${padding} font-bold rounded-sm ${margin} flex items-center gap-2 cursor-pointer`}
     >

@@ -9,7 +9,7 @@ export const authReducer = (state = initialState, action) => {
       console.log(action.payload);
       return {  token: action.payload };
     case "LOGOUT":
-      return { token: null };
+      return {token : null};
     case "REFRESH":
       return { token: action.payload };
     default:

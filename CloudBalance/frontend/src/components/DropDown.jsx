@@ -6,7 +6,7 @@ const DropDown = ({ name, optionsArr,  setSelected, styles }) => {
 
   return (
     <select
-      value=""      // still track selection internally
+      value=""      
       onChange={(e) => setSelected(e.target.value)}
       className={`${baseStyles} ${styles}`}
     >

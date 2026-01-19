@@ -6,9 +6,13 @@ import {
   PersonAddOutlined,
   MonetizationOnOutlined,
 } from "@mui/icons-material";
+import { ROLE_SIDEBAR } from "../utils/rbacConstant";
+import { useSelector } from "react-redux";
 
 
 const SideBar = ({ isSideBarOpen }) => {
+
+ const role = useSelector(state => state.user.role);
   const sideContent = [
     {
       label: "User Management",
@@ -32,13 +36,17 @@ const SideBar = ({ isSideBarOpen }) => {
     },
   ];
 
+  
+  const allowedPaths = ROLE_SIDEBAR[role] || [];
+ const filteredContent = sideContent.filter(item => allowedPaths.includes(item.path));
+
   return (
     <aside
       className={` ${
         isSideBarOpen ? "w-15" : "w-70"
       } mt-10 items-center flex flex-col gap-1 transition-width duration-400 ease-in-out`}
     >
-      {sideContent.map((item, i) => (
+      {filteredContent.map((item, i) => (
         <NavLink
           key={i}
           to={item.path}

@@ -1,4 +1,5 @@
 const initialState = {
+  userId : null,
   username: null,
   role: null,
   email: null,
@@ -9,13 +10,14 @@ const initialState = {
 export const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case "AUTH_FETCH_USER_START":
-      console.log("entered loading")
+    
       return { ...state, isLoading: true };
 
     case "AUTH_SET_CURRENT_USER":
-        console.log("entered set")
+      
       return {
         ...state,
+        userId : action.payload.usersId,
         username: action.payload.username,
         role: action.payload.role,
         email: action.payload.email,

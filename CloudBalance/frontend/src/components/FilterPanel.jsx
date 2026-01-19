@@ -1,81 +1,87 @@
-import React, { useState } from "react";
+import React, {  useState } from "react";
 
-const FILTERS = [
-  {
-    name: "Instance Type",
-    values: [
-      "c4.large",
-      "c4.xlarge",
-      "c4.8xlarge",
-      "c5.large",
-      "c5.xlarge",
-      "c5.2xlarge",
-      "c5.4xlarge",
-      "c5.9xlarge",
-      "No Instance Type",
-    ],
-  },
-  {
-    name: "Service",
-    values: [
-      "Amazon EC2",
-      "Amazon S3",
-      "Amazon RDS",
-      "Amazon CloudFront",
-      "Amazon DynamoDB",
-      "Amazon Lambda",
-    ],
-  },
-  {
-    name: "Region",
-    values: [
-      "us-east-1",
-      "us-west-2",
-      "ap-south-1",
-      "eu-west-1",
-      "ap-northeast-1",
-    ],
-  },
-];
+import { filters } from "../utils/filterConstant"; 
+import useCostFilters from "../hooks/useCostFilters";
+import { useSelector } from "react-redux";
 
-const FiltersPanel = () => {
+const FiltersPanel = ({ setDraftFilters, onApply }) => {
   const [openFilter, setOpenFilter] = useState(null);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState({});
+  const { allFilters } = useCostFilters();
+  const { role } = useSelector((state) => state.user);
+const isCustomer = role === "CUSTOMER";
 
-  const handleCheck = (value) => {
-    if (selected.includes(value)) {
-      setSelected(selected.filter((v) => v !== value));
-    } else {
-      setSelected([...selected, value]);
+
+  const frontendToBackend = Object.fromEntries(
+    filters.map((f) => [f.name, f.value])
+  );
+
+
+  const mappedFilters = Object.entries(allFilters || {}).map(
+    ([key, values]) => {
+      const frontendName = filters.find((f) => f.value === key)?.name || key;
+      return { name: frontendName, values };
     }
+  );
+
+  const handleCheck = (filterName, value) => {
+    setSelected((prev) => {
+      const current = prev[filterName] || [];
+      const updated = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
+      return { ...prev, [filterName]: updated };
+    });
   };
+
+
+
+const handleApply = () => {
+  const filtersForApi = {};
+
+  Object.entries(selected).forEach(([key, values]) => {
+    const backendKey = frontendToBackend[key];
+    if (backendKey) {
+      filtersForApi[backendKey] = values;
+    }
+  });
+
+  onApply(filtersForApi); 
+};
+
 
   return (
     <div className="h-full bg-white text-sm">
       {/* Header */}
       <div className="flex justify-between items-center px-4 py-3 border-b-2 border-b-[#cfdde5]">
         <h3 className="font-semibold">Filters</h3>
-        <button className="text-[#0a3ca2] text-xs font-medium">
+        <button
+          onClick={() => {
+           setSelected({});
+    setDraftFilters({});
+    onApply({});         
+    setOpenFilter(null);
+    setSearch("");
+          }}
+          className="text-[#0a3ca2] text-xs font-medium"
+        >
           Reset All
         </button>
       </div>
 
-      {/* Filter List */}
-      {FILTERS.map((filter) => {
+     
+      {mappedFilters.filter(filter => !(isCustomer && filter.name === "Account Id")).map((filter) => {
         const isOpen = openFilter === filter.name;
-
         const filteredValues = filter.values.filter((v) =>
           v.toLowerCase().includes(search.toLowerCase())
         );
 
         return (
           <div key={filter.name} className="border-b-2 border-b-[#cfdde5]">
-            {/* Normal Row */}
+        
             <div
-              onClick={() =>
-                setOpenFilter(isOpen ? null : filter.name)
-              }
+              onClick={() => setOpenFilter(isOpen ? null : filter.name)}
               className="flex justify-between items-center px-4 py-3 cursor-pointer hover:bg-gray-50"
             >
               <div className="flex items-center gap-2">
@@ -89,11 +95,12 @@ const FiltersPanel = () => {
               </div>
             </div>
 
-            {/* Expanded Section */}
+         
             {isOpen && (
               <div className="px-4 pb-4">
                 <p className="text-[#0a3ca2] text-xs font-medium mb-2">
-                  {selected.length} Items Selected
+                  {Object.values(selected[filter.name] || []).length} Items
+                  Selected
                 </p>
 
                 <input
@@ -108,20 +115,12 @@ const FiltersPanel = () => {
                 </p>
 
                 <div className="max-h-48 overflow-auto space-y-2 mb-4">
-                  <div className="flex items-center gap-2 font-medium">
-                    <input type="checkbox" />
-                    <span>Select All</span>
-                  </div>
-
                   {filteredValues.map((value) => (
-                    <div
-                      key={value}
-                      className="flex items-center gap-2"
-                    >
+                    <div key={value} className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={selected.includes(value)}
-                        onChange={() => handleCheck(value)}
+                        checked={(selected[filter.name] || []).includes(value)}
+                        onChange={() => handleCheck(filter.name, value)}
                       />
                       <span>{value}</span>
                     </div>
@@ -132,11 +131,14 @@ const FiltersPanel = () => {
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={() => setOpenFilter(null)}
-                    className="px-4 py-1 border-2 border-[#cfdde5] rounded-md text-[#0a3ca2]"
+                    className="px-4 py-1 cursor-pointer border-2 border-[#cfdde5] rounded-md text-[#0a3ca2]"
                   >
                     Close
                   </button>
-                  <button className="px-4 py-1 bg-gray-400 text-white rounded-md">
+                  <button
+                    onClick={handleApply}
+                    className="px-4 py-1 bg-[#0a3ca2] cursor-pointer text-white rounded-md"
+                  >
                     Apply
                   </button>
                 </div>

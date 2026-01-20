@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: cloudbalance-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/cloudbalance
+    username: root
+    password: 12345678
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+snowflake:
+  account: CFLIOJD-JR19821
+  user: RIMJHIM
+  password: "##CloudKeep2003"
+  warehouse: COMPUTE_WH
+  database: CLOUDBALANCE_SNOWFLAKE_DB
+  schema: PUBLIC
+
+
+jwt:
+  secretKey: fhfuehiuefiureyfiuryfiuwyfiuwyfiuyfiuewyfiewyiuwyfiewuyiudwhj
+  access-token.expiry: 900000  # 15 minutes
+#  access-token.expiry : 60000 # 1 minute
+  refresh-token.expiry: 604800000    # 7 days
+
